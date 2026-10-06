@@ -26,7 +26,7 @@ const categories = [
 const problems = [];
 
 for (const dir of readdirSync(root, { withFileTypes: true })) {
-  if (!dir.isDirectory() || dir.name.startsWith(".")) continue;
+  if (!dir.isDirectory() || dir.name.startsWith(".") || dir.name === "node_modules") continue;
   const slug = dir.name;
   const fail = (message) => problems.push(`${slug}: ${message}`);
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) fail("folder name must be lowercase words joined by hyphens");
