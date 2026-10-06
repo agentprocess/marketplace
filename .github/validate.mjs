@@ -1,16 +1,19 @@
 // Checks every process folder: PROCESS.md against the published core-2
 // schema, routes that point at real steps, and a complete marketplace.json.
-// Usage: node .github/validate.mjs [root] [schema path or URL]
+// Usage: node .github/validate.mjs [root] [schema path or URL] [--readme]
+// --readme also rewrites the catalog tables in README.md from the folders.
 // ponytail: structure and routes only; the site build runs the full validator
 // (reachability, parallel branches, profiles) before anything is listed.
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import Ajv from "ajv/dist/2020.js";
 import { parse } from "yaml";
 
-const root = process.argv[2] ?? ".";
+const args = process.argv.slice(2).filter((a) => a !== "--readme");
+const writeReadme = process.argv.includes("--readme");
+const root = args[0] ?? ".";
 const schemaAt =
-  process.argv[3] ??
+  args[1] ??
   "https://raw.githubusercontent.com/agentprocess/agentprocess/main/schemas/core-2/process-document.json";
 const schema = schemaAt.startsWith("http")
   ? await (await fetch(schemaAt)).json()
@@ -24,6 +27,7 @@ const categories = [
   "Personal life",
 ];
 const problems = [];
+const listed = [];
 
 for (const dir of readdirSync(root, { withFileTypes: true })) {
   if (!dir.isDirectory() || dir.name.startsWith(".") || dir.name === "node_modules") continue;
@@ -81,6 +85,7 @@ for (const dir of readdirSync(root, { withFileTypes: true })) {
     fail("marketplace.json: author.name is required");
   if (listing.author?.url !== undefined && !/^https:\/\//.test(listing.author.url))
     fail("marketplace.json: author.url must start with https://");
+  listed.push({ slug, listing, steps });
 }
 
 if (problems.length) {
@@ -88,3 +93,37 @@ if (problems.length) {
   process.exit(1);
 }
 console.log("All processes are valid.");
+
+if (writeReadme) {
+  // One square per working step, coloured by who does it.
+  const square = (s) =>
+    s.agent !== undefined ? "🟩" : s.approve !== undefined ? "🟧" : s.task !== undefined ? "🟨" : s.parallel ? "⬜" : "🟦";
+  const cell = (text) => String(text).replaceAll("|", "\\|");
+  const official = (l) => l.author.name === "Agent Process";
+  const tables = categories
+    .map((category) => {
+      const rows = listed
+        .filter((p) => p.listing.category === category)
+        .sort((a, b) => Number(official(b.listing)) - Number(official(a.listing)) || a.listing.title.localeCompare(b.listing.title))
+        .map(({ slug, listing, steps }) => {
+          const by = official(listing) ? "" : ` · Community, by ${cell(listing.author.name)}`;
+          // Word joiners keep the strip on one line.
+          const strip = steps.filter((s) => s.finish === undefined).map(square).join("\u2060");
+          return `| [**${cell(listing.title)}**](${slug}/PROCESS.md)<br><sub>${cell(listing.audience)}${by}</sub> | ${cell(listing.outcome)} | ${strip} |`;
+        });
+      return rows.length
+        ? `### ${category}\n\n| Process | What you get | Steps |\n|---|---|---|\n${rows.join("\n")}`
+        : "";
+    })
+    .filter(Boolean)
+    .join("\n\n");
+  const readme = readFileSync(join(root, "README.md"), "utf8");
+  const start = "<!-- catalog:start -->";
+  const end = "<!-- catalog:end -->";
+  if (!readme.includes(start) || !readme.includes(end)) throw new Error(`README.md needs ${start} and ${end}`);
+  writeFileSync(
+    join(root, "README.md"),
+    `${readme.slice(0, readme.indexOf(start) + start.length)}\n\n${tables}\n\n${readme.slice(readme.indexOf(end))}`,
+  );
+  console.log(`README.md catalog updated: ${listed.length} processes.`);
+}
