@@ -1,0 +1,17 @@
+{
+  "title": "Purchase request",
+  "category": "Operations and finance",
+  "audience": "Teams buying goods or services",
+  "outcome": "Purchases approved by the right person and the order confirmed",
+  "keywords": [
+    "buy",
+    "purchase order",
+    "po",
+    "spend approval",
+    "procurement"
+  ],
+  "author": {
+    "name": "Agent Process",
+    "url": "https://agentprocess.io"
+  }
+}

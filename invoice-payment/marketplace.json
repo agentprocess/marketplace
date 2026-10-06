@@ -1,0 +1,17 @@
+{
+  "title": "Invoice payment",
+  "category": "Operations and finance",
+  "audience": "Accounts payable and treasury",
+  "outcome": "Supplier invoices matched, approved and paid exactly once",
+  "keywords": [
+    "pay suppliers",
+    "bills",
+    "accounts payable",
+    "ap",
+    "vendor payment"
+  ],
+  "author": {
+    "name": "Agent Process",
+    "url": "https://agentprocess.io"
+  }
+}

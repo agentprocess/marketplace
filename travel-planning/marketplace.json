@@ -1,0 +1,18 @@
+{
+  "title": "Travel planning",
+  "category": "Personal life",
+  "audience": "Individuals and families",
+  "outcome": "Your trip booked, confirmed and ready to go",
+  "keywords": [
+    "trip",
+    "holiday",
+    "vacation",
+    "flights",
+    "hotel",
+    "itinerary"
+  ],
+  "author": {
+    "name": "Agent Process",
+    "url": "https://agentprocess.io"
+  }
+}

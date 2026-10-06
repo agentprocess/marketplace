@@ -1,0 +1,17 @@
+{
+  "title": "Inventory replenishment",
+  "category": "Operations and finance",
+  "audience": "Stockroom and retail operations",
+  "outcome": "Low stock spotted, reorders approved and incoming stock tracked",
+  "keywords": [
+    "stock",
+    "reorder",
+    "restock",
+    "supply",
+    "warehouse"
+  ],
+  "author": {
+    "name": "Agent Process",
+    "url": "https://agentprocess.io"
+  }
+}

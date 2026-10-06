@@ -1,0 +1,17 @@
+{
+  "title": "Expense reimbursement",
+  "category": "Operations and finance",
+  "audience": "Employees and finance teams",
+  "outcome": "Expense claims reviewed, approved, paid and matched in the books",
+  "keywords": [
+    "expenses",
+    "expense claim",
+    "receipts",
+    "reimburse",
+    "employee spend"
+  ],
+  "author": {
+    "name": "Agent Process",
+    "url": "https://agentprocess.io"
+  }
+}
